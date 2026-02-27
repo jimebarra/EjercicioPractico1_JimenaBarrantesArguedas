@@ -1,0 +1,188 @@
+<section th:fragment="agregar">
+    <div class='row py-4 mb-2 bg-light'>
+        <div class='col-md-1'></div>
+        <div class='col-md-3'>
+            <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#agregarReservaModal">
+                <i class="fa-solid fa-plus"></i> [[#{reserva.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade" id="agregarReservaModal" tabindex="-1"
+         aria-labelledby="agregarReservaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h1 class="modal-title fs-5" id="agregarReservaLabel">
+                        <i class="fa-solid fa-calendar-check"></i> [[#{reserva.agregar}]]</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form th:action='@{/reserva/guardar}' th:object='${reserva}'
+                      class='was-validated' method="post">
+                    <div class="modal-body">
+                        <div class='mb-3'>
+                            <label>[[#{reserva.nombreCliente}]]</label>
+                            <input type="text" name='nombreCliente' class='form-control' maxlength="100" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label>[[#{reserva.fecha}]]</label>
+                            <input type="date" name="fecha" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label>[[#{reserva.servicio}]]</label>
+                            <select name="servicio.id" class="form-select" required>
+                                <option value="">-- Seleccionar --</option>
+                                <option th:each="s : ${servicios}" th:value="${s.id}">
+                                    [[${s.nombre}]] - [[${#numbers.formatCurrency(s.precio)}]]
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{reserva.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${reservas != null and !reservas.empty}">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>[[#{reserva.nombreCliente}]]</th>
+                                    <th>[[#{reserva.fecha}]]</th>
+                                    <th>[[#{reserva.servicio}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${reservas}">
+                                    <td>[[${r.id}]]</td>
+                                    <td>[[${r.nombreCliente}]]</td>
+                                    <td>[[${r.fecha}]]</td>
+                                    <td>[[${r.servicio.nombre}]]</td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                                th:data-bs-id="${r.id}"
+                                                th:data-bs-descripcion="${r.nombreCliente}">
+                                            <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                                        </button>
+                                        <a th:href="@{/reserva/modificar/{id}(id=${r.id})}" class="btn btn-warning">
+                                            <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${reservas == null or reservas.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body">
+                    <h3>[[#{reserva.total}]]</h3>
+                    <h4 class="fs-2"><i class="fas fa-calendar-check"></i> [[${totalReservas}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section th:fragment="editar">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <form method="POST" th:action="@{/reserva/guardar}"
+                  th:object="${reserva}" class="was-validated">
+                <input type="hidden" name="id" th:field="*{id}"/>
+                <div class="row py-4 mb-4 bg-light">
+                    <div class="col-md-4 d-grid">
+                        <a th:href="@{/reserva/listado}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> [[#{accion.regresar}]]</a>
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> [[#{accion.guardar}]]</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header"><h4>[[#{accion.actualizar}]]</h4></div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label>[[#{reserva.nombreCliente}]]</label>
+                                    <input type="text" class="form-control" name="nombreCliente"
+                                           th:field="*{nombreCliente}" maxlength="100" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <label>[[#{reserva.fecha}]]</label>
+                                    <input type="date" class="form-control" name="fecha"
+                                           th:field="*{fecha}" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <label>[[#{reserva.servicio}]]</label>
+                                    <select name="servicio.id" th:field="*{servicio.id}"
+                                            class="form-select" required>
+                                        <option value="">-- Seleccionar --</option>
+                                        <option th:each="s : ${servicios}" th:value="${s.id}">
+                                            [[${s.nombre}]] - [[${#numbers.formatCurrency(s.precio)}]]
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section th:fragment="confirmarEliminar">
+    <div class="modal fade" id="confirmModal" tabindex="-1"
+         aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/reserva/eliminar}" th:object="${reserva}" method="post">
+                    <input type="hidden" name="idReserva" id="modalId"/>
+                    <div class="modal-header bg-warning text-white">
+                        <h5 class="modal-title" id="modalLabel">
+                            <i class="fa-solid fa-circle-radiation"></i> [[#{accion.confirmar}]]
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>[[#{accion.confirmar.texto1}]] <span id="modalDescripcion"></span>?</p>
+                        <h6>[[#{accion.confirmar.texto2}]]</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

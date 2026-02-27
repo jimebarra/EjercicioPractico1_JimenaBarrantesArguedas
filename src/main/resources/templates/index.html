@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"/>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"/>
+
+        <section class="py-4 bg-info text-white">
+            <div class="container text-center">
+                <h2>[[#{index.promocion}]]</h2>
+                <p class="lead">[[#{index.promo.detalle}]]</p>
+            </div>
+        </section>
+
+        <section class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h3 class="text-center mb-3">[[#{index.video.titulo}]]</h3>
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.youtube.com/embed/Hf6abfL1la4?si=5sNRnpXQiWX7r28f"
+                                title="Salón de Belleza" allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container py-4" th:if="${servicios != null and !servicios.empty}">
+            <h3 class="text-center mb-3">[[#{index.nuestrosServicios}]]</h3>
+            <div class="row">
+                <div th:each="s : ${servicios}" class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 th:text="${s.nombre}">Servicio</h5>
+                            <p class="text-muted" th:text="${s.categoria.nombre}">Categoría</p>
+                            <p class="fw-bold" th:text="${#numbers.formatCurrency(s.precio)}">₡0.00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer th:replace="~{general/fragmentos :: footer}"/>
+    </body>
+</html>
